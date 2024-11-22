@@ -1,0 +1,35 @@
+[
+    {
+      "name": "Gold Coin",
+      "type": "coinMultiplier",
+      "rarity": "Common",
+      "count": 0,
+      "level": 1,
+      "experience": 0
+    },
+    {
+      "name": "Silver Coin",
+      "type": "coinMultiplier",
+      "rarity": "Common",
+      "count": 0,
+      "level": 1,
+      "experience": 0
+    },
+    {
+      "name": "Diamond",
+      "type": "upgradeBoost",
+      "rarity": "Rare",
+      "count": 0,
+      "level": 1,
+      "experience": 0
+    },
+    {
+      "name": "Auto Clicker Chip",
+      "type": "autoClickerBoost",
+      "rarity": "Epic",
+      "count": 0,
+      "level": 1,
+      "experience": 0
+    }
+  ]
+  

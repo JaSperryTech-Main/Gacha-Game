@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "First Click",
+    "description": "Perform your first click",
+    "type": "totalClicks",
+    "target": 1,
+    "achieved": false
+  },
+  {
+    "id": 2,
+    "name": "Coin Hoarder",
+    "description": "Accumulate 1,000 coins",
+    "type": "coinCount",
+    "target": 1000,
+    "achieved": false
+  },
+  {
+    "id": 3,
+    "name": "Upgrade Master",
+    "description": "Purchase 10 upgrades",
+    "type": "upgrades",
+    "target": 10,
+    "achieved": false
+  },
+  {
+    "id": 4,
+    "name": "Gacha Guru",
+    "description": "Perform 20 gacha pulls",
+    "type": "totalGachaPulls",
+    "target": 20,
+    "achieved": false
+  }
+]

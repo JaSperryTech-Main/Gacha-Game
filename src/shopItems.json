@@ -1,0 +1,19 @@
+[
+    {
+      "id": 1,
+      "name": "Mega Click",
+      "description": "Double your coins per click for 5 minutes.",
+      "cost": 2000,
+      "duration": 300000,
+      "effect": "function() { this.coinsPerClick *= 2; setTimeout(() => { this.coinsPerClick /= 2; }, 300000); }"
+    },
+    {
+      "id": 2,
+      "name": "Auto Clicker Boost",
+      "description": "Increase auto clicker efficiency by 5 for 5 minutes.",
+      "cost": 5000,
+      "duration": 300000,
+      "effect": "function() { this.autoClickerEfficiency += 5; setTimeout(() => { this.autoClickerEfficiency -= 5; }, 300000); }"
+    }
+  ]
+  

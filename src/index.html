@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clicker Collector Gacha Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <h1>Clicker Collector Gacha Game</h1>
+
+    <!-- Tab Navigation -->
+    <div id="tabs">
+      <button class="tab-button" id="tab-collection">Collection</button>
+      <button class="tab-button" id="tab-inventory">Inventory</button>
+      <button class="tab-button" id="tab-upgrades">Upgrades</button>
+      <button class="tab-button" id="tab-gacha">Gacha</button>
+      <button class="tab-button" id="tab-auto-clicker">Auto Clicker</button>
+      <button class="tab-button" id="tab-shop">Shop</button> <!-- New Shop Tab -->
+      <button class="tab-button" id="tab-achievements">Achievements</button>
+      <button class="tab-button" id="tab-help">Help</button> <!-- Optional Help Tab -->
+    </div>
+
+    <!-- Tab Content -->
+    <div id="tab-content">
+      <!-- Collection Tab -->
+      <div class="tab-section" id="collection-section">
+        <p id="coin-count">Coins: 0</p>
+        <p>Coins per click: <span id="coins-per-click">1</span></p>
+        <button id="clicker-button">Click to Collect Coins</button>
+        <!-- Prestige Button -->
+        <button id="prestige-button">Prestige</button>
+        <p id="prestige-level">Prestige Level: 0</p>
+      </div>
+
+      <!-- Inventory Tab -->
+      <div class="tab-section" id="inventory-section">
+        <h2>Item Inventory</h2>
+        <ul id="item-inventory">
+          <!-- Items will be listed here -->
+        </ul>
+      </div>
+
+      <!-- Upgrades Tab -->
+      <div class="tab-section" id="upgrades-section">
+        <button id="upgrade-button"><span id="upgrade-cost">Loading...</span></button>
+        <p id="upgrade-status">Upgrades: 0</p>
+      </div>
+
+      <!-- Gacha Tab -->
+      <div class="tab-section" id="gacha-section">
+        <button id="gacha-button">Gacha Pull (Cost: 20 Coins)</button>
+        <h2>Gacha History</h2>
+        <ul id="gacha-history">
+          <li>No pulls yet...</li>
+        </ul>
+      </div>
+
+      <!-- Auto Clicker Tab -->
+      <div class="tab-section" id="auto-clicker-section">
+        <button id="auto-clicker-button">Buy Auto Clicker (Cost: 100 Coins)</button>
+        <p>Auto Clicker: <span id="auto-clicker-status">Inactive</span></p>
+      </div>
+
+      <!-- Shop Tab -->
+      <div class="tab-section" id="shop-section">
+        <h2>Shop</h2>
+        <ul id="shop-items">
+          <!-- Shop items will be listed here -->
+        </ul>
+      </div>
+
+      <!-- Achievements Tab -->
+      <div class="tab-section" id="achievements-section">
+        <h2>Achievements</h2>
+        <ul id="achievements-list">
+          <!-- Achievements will be listed here -->
+        </ul>
+      </div>
+
+      <!-- Help Tab (Optional) -->
+      <div class="tab-section" id="help-section">
+        <h2>Help & Instructions</h2>
+        <p>Welcome to the Clicker Collector Gacha Game!</p>
+        <p>Your goal is to collect as many coins as possible by clicking the "Click to Collect Coins" button.</p>
+        <p>Use your coins to purchase upgrades, perform gacha pulls to collect items, and buy auto-clickers.</p>
+        <p>Prestige to reset your progress for permanent bonuses!</p>
+        <!-- Add more instructions as needed -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional: Music Toggle Button -->
+  <button id="toggle-music">Toggle Music</button>
+
+  <!-- Include the JavaScript files -->
+  <script src="game.js"></script>
+</body>
+</html>

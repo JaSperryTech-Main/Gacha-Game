@@ -1,0 +1,13 @@
+[
+    {
+      "name": "Meteor Shower",
+      "probability": 0.05,
+      "effect": "function() { const bonusCoins = 500; this.coinCount += bonusCoins; alert(`A meteor shower rained down ${bonusCoins} coins!`); this.updateCoinCount(); }"
+    },
+    {
+      "name": "Thief Encounter",
+      "probability": 0.03,
+      "effect": "function() { const lostCoins = Math.floor(this.coinCount * 0.2); this.coinCount -= lostCoins; alert(`A thief stole ${lostCoins} coins!`); this.updateCoinCount(); }"
+    }
+  ]
+  
