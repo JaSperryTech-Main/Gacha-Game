@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let autoClickerCost = 100;
   let autoClickerActive = false;
   let autoClickerInterval = null;
-
   let gachaHistory = [];
   let gachaRarities = ["Common", "Rare", "Epic"];
   let collectedItems = [];
@@ -26,9 +25,15 @@ document.addEventListener("DOMContentLoaded", () => {
       count: 0,
       upgradeGoal: 3,
     },
+    {
+      name: "Auto Clicker Boost",
+      effect: "Increase auto-clicker efficiency by 1 coin per second.",
+      type: "autoClickerBoost",
+      count: 0,
+      upgradeGoal: 5,
+    },
   ];
 
-  // DOM elements
   const coinCountElement = document.getElementById("coin-count");
   const clickerButton = document.getElementById("clicker-button");
   const upgradeButton = document.getElementById("upgrade-button");
@@ -38,31 +43,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const upgradeStatusElement = document.getElementById("upgrade-status");
   const gachaHistoryElement = document.getElementById("gacha-history");
   const itemInventoryElement = document.getElementById("item-inventory");
-  const autoClickerStatusElement = document.getElementById(
-    "auto-clicker-status"
-  );
+  const autoClickerStatusElement = document.getElementById("auto-clicker-status");
+  const upgradeCostElement = document.getElementById("upgrade-cost");
   const tabButtons = document.querySelectorAll(".tab-button");
   const tabSections = document.querySelectorAll(".tab-section");
 
   const dbName = "gameStateDB";
   let db;
 
-  // Open IndexedDB and load game state if it exists
   const openDB = () => {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(dbName, 1);
-
       request.onupgradeneeded = () => {
         db = request.result;
         if (!db.objectStoreNames.contains("gameData")) {
           db.createObjectStore("gameData", { keyPath: "id" });
         }
       };
-
       request.onerror = () => {
         reject("Error opening IndexedDB");
       };
-
       request.onsuccess = () => {
         db = request.result;
         resolve(db);
@@ -70,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  // Save game state to IndexedDB
   const saveGameData = () => {
     const transaction = db.transaction(["gameData"], "readwrite");
     const store = transaction.objectStore("gameData");
@@ -82,43 +81,42 @@ document.addEventListener("DOMContentLoaded", () => {
       upgradeCost,
       gachaCost,
       autoClickerCost,
-      autoClickerActive, // Save the autoClicker state
+      autoClickerActive,
       gachaHistory,
       collectedItems,
-      allItems, // Ensure the allItems are also saved
+      allItems,
     };
     store.put(gameState);
   };
 
-  // Load game state from IndexedDB
   const loadGameData = () => {
     const transaction = db.transaction(["gameData"], "readonly");
     const store = transaction.objectStore("gameData");
     const request = store.get(1);
-
     request.onsuccess = (e) => {
       const gameState = e.target.result;
       if (gameState) {
-        // Load all game data
         coinCount = gameState.coinCount;
         coinsPerClick = gameState.coinsPerClick;
         upgrades = gameState.upgrades;
         upgradeCost = gameState.upgradeCost;
         gachaCost = gameState.gachaCost;
         autoClickerCost = gameState.autoClickerCost;
-        autoClickerActive = gameState.autoClickerActive; // Load the autoClicker state
+        autoClickerActive = gameState.autoClickerActive;
         gachaHistory = gameState.gachaHistory;
         collectedItems = gameState.collectedItems;
-        allItems = gameState.allItems || allItems; // Ensure allItems is initialized
+        allItems = gameState.allItems || allItems;
 
-        // After loading the data, update the UI
+        // Apply bonuses based on collected items
+        applyItemBonuses();  // Apply the item bonuses here
+
+        // Update UI elements
         updateCoinCount();
-        coinsPerClickElement.textContent = coinsPerClick;
+        coinsPerClickElement.textContent = `Coins per click: ${coinsPerClick}`;
         upgradeStatusElement.textContent = `Upgrades: ${upgrades}`;
         updateGachaHistory();
-        updateItemInventory(); // Update inventory after loading saved data
+        updateItemInventory();
 
-        // If the auto clicker was active, restart it
         if (autoClickerActive) {
           autoClickerInterval = setInterval(() => {
             coinCount += coinsPerClick;
@@ -127,50 +125,47 @@ document.addEventListener("DOMContentLoaded", () => {
           }, 1000);
           autoClickerStatusElement.textContent = "Active";
         }
+
+        // Update the upgrade cost display here after the game state has loaded
+        if (upgradeCostElement) {
+          upgradeCostElement.textContent = `Next upgrade cost: ${upgradeCost} coins`;
+        }
       }
     };
-
     request.onerror = () => {
       console.log("Error loading game data from IndexedDB");
     };
   };
 
-  // Initialize the game, loading the game state if available
   const initializeGame = async () => {
     await openDB();
-    loadGameData(); // Load game data after IndexedDB is opened
+    loadGameData();
   };
 
-  // Function to update the coin count display
-  function updateCoinCount() {
+  const updateCoinCount = () => {
     coinCountElement.textContent = `Coins: ${coinCount}`;
-  }
+  };
 
-  // Force save when exiting or reloading
   window.addEventListener("beforeunload", (event) => {
-    saveGameData(); // Ensure game state is saved when the user exits or reloads the page
-    event.preventDefault(); // Prevent the default behavior (closing the page)
+    saveGameData();
+    event.preventDefault();
   });
 
   function switchTab(tabId) {
-    // Remove 'active' class from all buttons and sections
     tabButtons.forEach((button) => button.classList.remove("active"));
     tabSections.forEach((section) => {
       section.classList.remove("active");
-      section.style.display = "none"; // Hide all sections by default
+      section.style.display = "none";
     });
 
-    // Add 'active' class to the selected tab button
     const activeTabButton = document.getElementById(`tab-${tabId}`);
     activeTabButton.classList.add("active");
 
-    // Add 'active' class to the corresponding tab section and make it visible
     const activeTabSection = document.getElementById(`${tabId}-section`);
     activeTabSection.classList.add("active");
-    activeTabSection.style.display = "block"; // Ensure the active tab section is displayed
+    activeTabSection.style.display = "block";
   }
 
-  // Set up default tab (first tab, collection)
   switchTab("collection");
 
   tabButtons.forEach((button) => {
@@ -180,65 +175,55 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Handle the clicker button click event
   clickerButton.addEventListener("click", () => {
     coinCount += coinsPerClick;
     updateCoinCount();
     saveGameData();
   });
 
-  // Handle the upgrade button click event
+  // Update the upgrade status and display the current upgrade cost
   upgradeButton.addEventListener("click", () => {
     if (coinCount >= upgradeCost) {
       coinCount -= upgradeCost;
       upgrades++;
       coinsPerClick = 1 + upgrades;
-      upgradeCost = Math.floor(upgradeCost * 1.5);
+      upgradeCost = Math.floor(upgradeCost * 1.5); // Increase cost by 1.5x
       updateCoinCount();
-      coinsPerClickElement.textContent = coinsPerClick;
+      coinsPerClickElement.textContent = `Coins per click: ${coinsPerClick}`;
       upgradeStatusElement.textContent = `Upgrades: ${upgrades}`;
-      upgradeButton.textContent = `Upgrade (Cost: ${upgradeCost} Coins)`;
+
+      // Update the upgrade cost display
+      upgradeCostElement.textContent = `Next upgrade cost: ${upgradeCost} coins`;
+
       saveGameData();
     } else {
       alert("Not enough coins to upgrade!");
     }
   });
 
-  // Handle the gacha button click event
   gachaButton.addEventListener("click", () => {
     if (coinCount >= gachaCost) {
       coinCount -= gachaCost;
-      updateCoinCount(); // Update the coin count display
-
-      // Determine rarity of the item
+      updateCoinCount();
       const rarity =
         gachaRarities[Math.floor(Math.random() * gachaRarities.length)];
-      let item = getRandomItem(); // Get a random item to give to the player
-
-      // If an item is obtained, update its count and save it to the inventory
+      let item = getRandomItem();
       if (item) {
-        item.count++; // Increase the count of the item
-        collectedItems.push(item); // Optionally keep track of the collected item
-        addToGachaHistory(item.name, rarity); // Add to gacha history
-
-        // Update allItems to reflect the new count
+        item.count++;
+        collectedItems.push(item);
+        addToGachaHistory(item.name, rarity);
         const existingItem = allItems.find((i) => i.name === item.name);
         if (existingItem) {
-          existingItem.count = item.count; // Update existing item count in allItems
+          existingItem.count = item.count;
         }
-
-        // Update the inventory display
         updateItemInventory();
       }
-
-      // Save the updated game data
       saveGameData();
     } else {
       alert("Not enough coins for a Gacha pull!");
     }
   });
 
-  // Handle the auto clicker button click event
   autoClickerButton.addEventListener("click", () => {
     if (coinCount >= autoClickerCost) {
       coinCount -= autoClickerCost;
@@ -249,81 +234,76 @@ document.addEventListener("DOMContentLoaded", () => {
         autoClickerInterval = setInterval(() => {
           coinCount += coinsPerClick;
           updateCoinCount();
-          saveGameData(); // Save game state after each auto-click
+          saveGameData();
         }, 1000);
         autoClickerStatusElement.textContent = "Active";
       } else {
         clearInterval(autoClickerInterval);
         autoClickerStatusElement.textContent = "Inactive";
       }
-
-      saveGameData(); // Save game state whenever auto clicker is activated or deactivated
+      saveGameData();
     } else {
-      alert("Not enough coins to buy Auto Clicker!");
+      alert("Not enough coins to buy Auto-Clicker!");
     }
   });
 
-  // Add item to Gacha History
-  function addToGachaHistory(itemName, rarity) {
-    const historyEntry = `${itemName} (${rarity})`;
-    gachaHistory.unshift(historyEntry);
-    if (gachaHistory.length > 5) {
-      gachaHistory.pop(); // Limit to last 5 pulls
+  // Apply the bonuses based on collected items
+  const applyItemBonuses = () => {
+    // Apply Coin Multiplier bonus
+    const coinMultiplierItem = allItems.find(item => item.type === 'coinMultiplier');
+    if (coinMultiplierItem) {
+      coinsPerClick = 1 + (coinMultiplierItem.count * 2); // Increase coins per click by 2 for each item
     }
-    updateGachaHistory();
-  }
 
-  // Update the displayed Gacha History
-  function updateGachaHistory() {
-    gachaHistoryElement.innerHTML =
-      gachaHistory.length > 0
-        ? gachaHistory.map((entry) => `<li>${entry}</li>`).join("")
-        : "<li>No pulls yet...</li>";
-  }
+    // Apply Upgrade Boost bonus
+    const upgradeBoostItem = allItems.find(item => item.type === 'upgradeBoost');
+    if (upgradeBoostItem) {
+      const upgradeBoostFactor = 1 - (upgradeBoostItem.count * 0.1); // Reduce cost by 10% for each item
+      upgradeCost = Math.floor(upgradeCost * upgradeBoostFactor); // Update upgrade cost with the bonus
+    }
 
-  // Update the item inventory
-  function updateItemInventory() {
-    itemInventoryElement.innerHTML = ""; // Clear current inventory display
-
-    // Loop through all items and display their counts
-    allItems.forEach((item) => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `${item.name} (Count: ${item.count})`;
-
-      // Disable the item if it has reached the upgrade goal
-      if (item.count >= item.upgradeGoal) {
-        listItem.classList.add("disabled");
+    // Apply Auto Clicker Boost
+    const autoClickerBoostItem = allItems.find(item => item.type === 'autoClickerBoost');
+    if (autoClickerBoostItem) {
+      const autoClickerBoost = autoClickerBoostItem.count; // Increase efficiency by 1 coin per second per item
+      if (autoClickerActive) {
+        clearInterval(autoClickerInterval);
+        autoClickerInterval = setInterval(() => {
+          coinCount += coinsPerClick + autoClickerBoost; // Apply the boost to auto-clicker efficiency
+          updateCoinCount();
+          saveGameData();
+        }, 1000);
       }
-
-      // Create and append the progress bar for each item
-      const progressBar = document.createElement("div");
-      progressBar.classList.add("progress-bar");
-      const progressPercent = (item.count / item.upgradeGoal) * 100;
-      progressBar.style.width = `${Math.min(progressPercent, 100)}%`;
-      listItem.appendChild(progressBar);
-
-      // Add the item to the inventory display
-      itemInventoryElement.appendChild(listItem);
-    });
-  }
-
-  // Randomly select an item to give to the player
-  function getRandomItem() {
-    const items = allItems.filter((item) => item.count < item.upgradeGoal); // Filter out items that have reached the upgrade goal
-    return items.length > 0
-      ? items[Math.floor(Math.random() * items.length)]
-      : null;
-  }
-
-  // Apply item effects
-  function applyItemEffect(item) {
-    if (item.type === "coinMultiplier") {
-      coinsPerClick *= 2;
-    } else if (item.type === "upgradeBoost") {
-      upgradeCost = Math.floor(upgradeCost * 0.9);
     }
-  }
 
-  // Initialize the game
+    // Update UI elements after applying bonuses
+    coinsPerClickElement.textContent = `Coins per click: ${coinsPerClick}`;
+    upgradeCostElement.textContent = `Next upgrade cost: ${upgradeCost} coins`;
+  };
+
+  const updateGachaHistory = () => {
+    gachaHistoryElement.innerHTML = gachaHistory.map((entry) => {
+      return `<li>${entry.item} (${entry.rarity})</li>`;
+    }).join('');
+  };
+
+  const updateItemInventory = () => {
+    itemInventoryElement.innerHTML = allItems.map((item) => {
+      return `<li>${item.name} (x${item.count})</li>`;
+    }).join('');
+  };
+
+  const getRandomItem = () => {
+    const rareItems = allItems.filter(item => item.count < item.upgradeGoal);
+    return rareItems[Math.floor(Math.random() * rareItems.length)];
+  };
+
+  const addToGachaHistory = (itemName, rarity) => {
+    gachaHistory.unshift({ item: itemName, rarity });
+    if (gachaHistory.length > 10) {
+      gachaHistory.pop();
+    }
+  };
+
   initializeGame();
 });
