@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clicker Collector Gacha Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <h1>Clicker Collector Gacha Game</h1>
+
+    <!-- Tab navigation -->
+    <div id="tabs">
+      <button class="tab-button" id="tab-collection">Collection</button>
+      <button class="tab-button" id="tab-inventory">Inventory</button>
+      <button class="tab-button" id="tab-upgrades">Upgrades</button>
+      <button class="tab-button" id="tab-gacha">Gacha</button>
+      <button class="tab-button" id="tab-auto-clicker">Auto Clicker</button>
+    </div>
+
+    <!-- Tab content -->
+    <div id="tab-content">
+      <!-- Collection Tab -->
+      <div class="tab-section" id="collection-section">
+        <p id="coin-count">Coins: 0</p>
+        <p>Coins per click: <span id="coins-per-click">1</span></p>
+        <button id="clicker-button">Click to Collect Coins</button>
+      </div>
+
+      <div class="tab-section" id="inventory-section">
+        <h2>Item Inventory</h2>
+        <ul id="item-inventory">
+          <!-- Items will be listed here -->
+        </ul>
+      </div>
+
+      <!-- Upgrades Tab -->
+      <div class="tab-section" id="upgrades-section">
+        <button id="upgrade-button">Upgrade (Cost: 10 Coins)</button>
+        <p id="upgrade-status">Upgrades: 0</p>
+      </div>
+
+      <!-- Gacha Tab -->
+      <div class="tab-section" id="gacha-section">
+        <button id="gacha-button">Gacha Pull (Cost: 20 Coins)</button>
+        <h2>Gacha History</h2>
+        <ul id="gacha-history">
+          <li>No pulls yet...</li>
+        </ul>
+      </div>
+
+      <!-- Auto Clicker Tab -->
+      <div class="tab-section" id="auto-clicker-section">
+        <button id="auto-clicker-button">Buy Auto Clicker (Cost: 100 Coins)</button>
+        <p>Auto Clicker: <span id="auto-clicker-status">Inactive</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
